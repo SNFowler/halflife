@@ -1,0 +1,38 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linear Function Plotter</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="settings">
+      <h2>Linear Function Plotter</h2>
+      <div class="input-group">
+        <label>
+          a:
+          <input type="number" id="inputA" value="0">
+        </label>
+        <label>
+          b:
+          <input type="number" id="inputB" value="1">
+        </label>
+        <label>
+          max:
+          <input type="number" id="inputMax" value="10">
+        </label>
+        <button id="plotButton">Plot Graph</button>
+      </div>
+    </div>
+    <div class="graph">
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
