@@ -31,13 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
-    function apply_metabolism(halflife, timestep, drug_levels) {
-      const multiplicative_loss = Math.pow(0.5, timestep / halflife);
-      for (let j = 1; j < drug_levels.length; j++) {
-        drug_levels[j] += drug_levels[j - 1] * (multiplicative_loss - 1);
-      }
-    }
-  
     function generateData(regimens, settings) {
       const num_time_entries = Math.ceil((settings.max_time - settings.min_time) / settings.time_step) + 1;
       const x = [];
@@ -45,50 +38,61 @@ document.addEventListener('DOMContentLoaded', () => {
         x.push(settings.min_time + i * settings.time_step);
       }
   
-      // Sort regimens by name
-      regimens.sort((a, b) => a.name.localeCompare(b.name));
+      // Group regimens by drug name
+      const drugRegimens = {};
+      regimens.forEach(regimen => {
+        if (!drugRegimens[regimen.name]) {
+          drugRegimens[regimen.name] = [];
+        }
+        drugRegimens[regimen.name].push(regimen);
+      });
   
       const full_data = {};
-      let p = 0;
-      let currentName = regimens.length > 0 ? regimens[0].name : null;
-      let drug_levels = Array(x.length).fill(0);
   
-      while (p < regimens.length) {
-        const regimen = regimens[p];
-        const multiplicative_loss = Math.pow(0.5, settings.time_step / regimen.halflife);
-        const doses = Array(x.length).fill(0);
+      for (const drugName in drugRegimens) {
+        const regimensForDrug = drugRegimens[drugName];
   
-        // Schedule doses
-        for (let q = 0; q < x.length; q++) {
-          const time = x[q];
-          if (time >= regimen.delay && ((time - regimen.delay) % regimen.period) === 0) {
-            doses[q] += regimen.dose;
+        // Initialize total drug_levels for this drug
+        const total_drug_levels = Array(x.length).fill(0);
+  
+        // For each regimen of this drug
+        regimensForDrug.forEach(regimen => {
+          const drug_levels = Array(x.length).fill(0);
+          const dose_added_at_t = Array(x.length).fill(0);
+          const multiplicative_loss = Math.exp(-Math.log(2) * settings.time_step / regimen.halflife);
+  
+          // Schedule doses for this regimen
+          for (let q = 0; q < x.length; q++) {
+            const time = x[q];
+            if (time >= regimen.delay) {
+              const time_since_delay = time - regimen.delay;
+              const period = regimen.period;
+              const mod = time_since_delay % period;
+              const tolerance = 1e-6;
+              if (Math.abs(mod) < tolerance || Math.abs(mod - period) < tolerance) {
+                dose_added_at_t[q] += regimen.dose;
+              }
+            }
           }
-        }
   
-        // Add doses to drug_levels
-        for (let q = 0; q < x.length; q++) {
-          drug_levels[q] += doses[q];
-        }
+          // Now, calculate drug_levels for this regimen
+          for (let t = 0; t < x.length; t++) {
+            if (t === 0) {
+              drug_levels[t] = dose_added_at_t[t];
+            } else {
+              drug_levels[t] = drug_levels[t - 1] * multiplicative_loss + dose_added_at_t[t];
+            }
+          }
   
-        // Apply metabolism
-        for (let j = 1; j < drug_levels.length; j++) {
-          drug_levels[j] += drug_levels[j - 1] * (multiplicative_loss - 1);
-        }
+          // Sum up the drug levels from this regimen to the total
+          for (let t = 0; t < x.length; t++) {
+            total_drug_levels[t] += drug_levels[t];
+          }
+        });
   
-        // Check if next regimen has a different name or if we're at the last regimen
-        const nextRegimen = regimens[p + 1];
-        if (!nextRegimen || nextRegimen.name !== currentName) {
-          // Add to full_data
-          const dataPoints = x.map((time, index) => ({ x: time, y: drug_levels[index] }));
-          full_data[currentName] = dataPoints;
-          // Reset drug_levels
-          drug_levels = Array(x.length).fill(0);
-          // Update currentName
-          currentName = nextRegimen ? nextRegimen.name : null;
-        }
-  
-        p++;
+        // Prepare data for plotting
+        const dataPoints = x.map((time, index) => ({ x: time, y: total_drug_levels[index] }));
+        full_data[drugName] = dataPoints;
       }
   
       return full_data;
