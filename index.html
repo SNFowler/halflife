@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Linear Function Plotter</title>
+  <title>Drug Level Plotter</title>
   <link rel="stylesheet" href="styles.css">
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,22 +11,23 @@
 <body>
   <div class="container">
     <div class="settings">
-      <h2>Linear Function Plotter</h2>
+      <h2>Drug Level Plotter</h2>
       <div class="input-group">
         <label>
-          a:
-          <input type="number" id="inputA" value="0">
+          Min Time (hrs):
+          <input type="number" id="minTime" value="0">
         </label>
         <label>
-          b:
-          <input type="number" id="inputB" value="1">
+          Max Time (hrs):
+          <input type="number" id="maxTime" value="72">
         </label>
-        <label>
-          max:
-          <input type="number" id="inputMax" value="10">
-        </label>
-        <button id="plotButton">Plot Graph</button>
       </div>
+      <h3>Regimens</h3>
+      <div id="regimensContainer">
+        <!-- Regimen forms will be added here -->
+      </div>
+      <button id="addRegimenButton">Add New Regimen</button>
+      <button id="plotButton">Plot Graph</button>
     </div>
     <div class="graph">
       <canvas id="myChart"></canvas>
