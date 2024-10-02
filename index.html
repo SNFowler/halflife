@@ -4,33 +4,42 @@
 <head>
   <meta charset="UTF-8">
   <title>Drug Level Plotter</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- Google Font for better typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <header>
+    <h1>Drug Level Plotter</h1>
+  </header>
   <div class="container">
-    <div class="settings">
-      <h2>Drug Level Plotter</h2>
-      <div class="input-group">
-        <label>
-          Min Time (hrs):
-          <input type="number" id="minTime" value="0">
-        </label>
-        <label>
-          Max Time (hrs):
-          <input type="number" id="maxTime" value="72">
-        </label>
+    <div class="left-panel">
+      <div class="settings">
+        <h2>Settings</h2>
+        <div class="input-group">
+          <label>
+            Min Time (hrs):
+            <input type="number" id="minTime" value="0">
+          </label>
+          <label>
+            Max Time (hrs):
+            <input type="number" id="maxTime" value="72">
+          </label>
+        </div>
+        <h3>Regimens</h3>
+        <div id="regimensContainer">
+          <!-- Regimen forms will be added here -->
+        </div>
+        <button id="addRegimenButton">Add New Regimen</button>
+        <button id="plotButton">Plot Graph</button>
       </div>
-      <h3>Regimens</h3>
-      <div id="regimensContainer">
-        <!-- Regimen forms will be added here -->
-      </div>
-      <button id="addRegimenButton">Add New Regimen</button>
-      <button id="plotButton">Plot Graph</button>
     </div>
-    <div class="graph">
-      <canvas id="myChart"></canvas>
+    <div class="right-panel">
+      <div class="graph">
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
   </div>
 
